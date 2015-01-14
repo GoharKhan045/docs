@@ -1,0 +1,111 @@
+/*
+ * @license
+ * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+ * The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+ * The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+ * Code distributed by Google as part of the polymer project is also
+ * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+
+@import "elements";
+@import "material";
+
+:host {
+  display: block;
+  position: relative;
+  margin-bottom: 40px;
+
+  .details {
+    padding: 16px;
+
+    .params {
+      margin-top: 40px;
+    }
+  }
+
+  h3 {
+    padding: 16px;
+    color: white;
+  }
+
+  pre {
+    padding: initial;
+    background-color: transparent;
+    margin: initial;
+    font-size: 12px;
+  }
+
+  code {
+    color: currentcolor;
+    font-weight: 500;
+  }
+}
+
+:host([type="attributes"]) {
+  .details {
+    @extend .material-orange-light;
+    border-bottom: 1px solid rgba(255, 86, 33, 0.5);
+  }
+  .details-collapsed {
+    background: #FBE9E7;
+  }
+  h3 {
+    @extend .material-orange;
+  }
+}
+
+:host([type="properties"]) {
+  .details {
+    @extend .material-yellow-light;
+    border-bottom: 1px solid rgba(243, 179, 0, 0.5);
+  }
+  .details-collapsed {
+    background: #FFF8E1;
+  }
+  h3 {
+    @extend .material-yellow;
+  }
+}
+
+:host([type="methods"]) {
+  .details {
+    @extend .material-green-light;
+    border-bottom: 1px solid rgba(0, 190, 164, 0.5);
+  }
+  .details-collapsed {
+    background: #E0F2F1;
+  }
+  h3 {
+    @extend .material-green;
+  }
+}
+
+:host([type="events"]) {
+  .details {
+    @extend .material-blue-light;
+    border-bottom: 1px solid rgba(65, 132, 243, 0.5);
+  }
+  .details-collapsed {
+    background: #E3F2FD;
+  }
+  h3 {
+    @extend .material-blue;
+  }
+}
+
+.inherit-toggle {
+  position: absolute;
+  top: 30px;
+  right: 12px;
+  color: white;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.inherit-toggle:hover,
+.inherit-toggle:focus {
+  text-decoration: underline;
+}

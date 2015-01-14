@@ -129,6 +129,17 @@ module.exports = function(grunt) {
         'compass',
         'watch'
       ]
+    },
+
+    doc_merge: {
+      default: {
+        options: {
+          config: 'config.json',
+          merge: true
+        },
+        src: 'components',
+        dest: '_data/elements'
+      }
     }
 
   });

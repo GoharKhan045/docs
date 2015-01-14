@@ -1,0 +1,11 @@
+{
+  "name": "Entity",
+  "description": "**Undocumented**",
+  "location": "components/paper-dialog/paper-dialog-transition.html",
+  "inherited": {
+    "methods": [],
+    "attributes": [],
+    "events": [],
+    "properties": []
+  }
+}
