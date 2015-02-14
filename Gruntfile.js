@@ -152,7 +152,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['concurrent']);
 
   // Task to run vulcanize and build the jekyll site
-  grunt.registerTask('docs', ['vulcanize', 'jekyll:build']);
+  grunt.registerTask('docs', ['doc_merge', 'vulcanize', 'jekyll:build']);
   
   // Task just for running the GAE dev server.
   grunt.registerTask('serve', ['appengine:run:frontend']);
