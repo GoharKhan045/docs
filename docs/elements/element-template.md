@@ -8,13 +8,13 @@ published: false
 
 {% assign element = site.data.elements[page.element] %}
 
-<!-- <doc-page></doc-page> -->
-
 <component-docs></component-docs>
 
 <script>
   (function() {
-
+    // JSON for each element will be rendered here.
+    // Grab the element's JSON and hand it to the `component-docs` element
+    // when the page boots up
     function initDoc() {
       var elementDoc = {{element | jsonify}};
       document.querySelector('component-docs').data = elementDoc;  

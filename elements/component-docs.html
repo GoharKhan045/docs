@@ -22,46 +22,7 @@
       // Default to the height of the banner on the current site, though this can
       // be overridden by the page that uses <compontent-docs> as needed.
       bannerHeight: 80,
-      elementName: null,
-      url: null,
-      elements: {},
       data: {},
-      updateElementFromHash: function(e) {
-        // The URL fragment might be just an element name,
-        // or it might be an element name followed by a '.' and then
-        // a section of the page.
-        // We want to match on just element names here, so split on '.'.
-        // E.g.: 'core-ajax.properties.xhrArgs' -> 'core-ajax'
-        //       'core-xhr' -> 'core-xhr'
-        // var elementName = window.location.hash.slice(1).split('.')[0];
-        // if (this.elementName !== elementName && this.elements[elementName]) {
-        //   this.elementName = elementName;
-        //   document.body.classList.add('hide-on-hash'); // Hide on .hide-on-hash elements.
-        // }
-      },
-      domReady: function() {
-        // this.updateElementFromHash();
-        // window.addEventListener('hashchange', this.updateElementFromHash.bind(this));
-      },
-      detached: function() {
-        // document.body.classList.remove('hide-on-hash');
-        // window.removeEventListener('hashchange', this.updateElementFromHash.bind(this));
-      },
-      elementNameChanged: function() {
-        // this.url = '/' + this.elements[this.elementName];
-        // Only update the location.hash here if the name of the new element
-        // isn't already at the start of the hash (position 1, after the '#').
-        // This will ensure that we don't overwrite a hash like
-        // #<elementName>.something.something with #<elementName>
-        // if (window.location.hash.indexOf(this.elementName) !== 1) {
-        //   window.location.hash = this.elementName;
-        // }
-      },
-      dataChanged: function() {
-        // if (this.data.classes[0].name === 'Entity') {
-        //   this.data.classes[0].name = this.elementName;
-        // }
-      },
       isTopLevelElement: function(name, url) {
         if (!name || !url) {
           return;
