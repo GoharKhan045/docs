@@ -1,6 +1,6 @@
 <!--
     @license
-    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
     This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
     The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
     The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
@@ -10,11 +10,11 @@
 <link rel="import" href="../components/polymer/polymer.html">
 <link rel="import" href="../components/marked-element/marked-element.html">
 
-<polymer-element name="doc-page" attributes="bannerHeight data downloadable" assetpath="../core-doc-viewer/elements/">
+<polymer-element name="doc-page" attributes="bannerHeight data downloadable">
   <template>
     <link rel="stylesheet" href="../components/highlightjs/styles/default.css">
     <link rel="stylesheet" href="../css/elements/doc-page.css">
-    <div id="main" class="main" on-marked-js-highlight="{{prettyPrint}}" on-click="{{handleAnchorIdClick}}">
+    <div id="main" class="main" on-marked-js-highlight="{{prettyPrint_}}" on-click="{{handleAnchorIdClick}}">
       <h1 data-anchor-id="{{data.name}}">{{data.name}}</h1>
 
       <template bind="{{data as data}}" if="{{data.extends || data.mixins}}">
@@ -28,7 +28,7 @@
                     <a href="{{e.url}}">{{e.name}}</a>
                   </template>
                   <template if="{{!e.url}}">
-                    <a href="{{e.name | collectionPrefix}}-elements.html#{{e.name}}">{{e.name}}</a>
+                    <a href="{{e.name}}.html">{{e.name}}</a>
                   </template>
                   <span hidden?="{{i == data.extends.length - 1}}">,</span>
                 </template>
@@ -59,7 +59,7 @@
               org="Polymer" component="{{data.name}}"
               label="Get {{data.name}}"></component-download-button>
           <a class="badge" target="_blank" href="/components/{{data.name}}/demo.html"
-                           on-click="{{recordDemoPageview}}">
+                           on-click="{{recordDemoPageview_}}">
             <paper-button raised>Demo</paper-button>
           </a>
         </p>
@@ -78,8 +78,8 @@
             <h3 data-anchor-id="{{data.name}}.attributes">Attributes</h3>
             <template if="{{data.inherited.attributes.length}}">
               <button class="inherit-toggle"
-                      data-target="collapse-attributes"
-                      on-click="{{toggle}}">
+                      data-target="#collapse-attributes"
+                      on-click="{{toggle_}}">
                 Show inherited
               </button>
             </template>
@@ -130,8 +130,8 @@
             <h3 data-anchor-id="{{data.name}}.properties">Properties</h3>
             <template if="{{data.inherited.properties.length}}">
               <button class="inherit-toggle"
-                      data-target="collapse-properties"
-                      on-click="{{toggle}}">
+                      data-target="#collapse-properties"
+                      on-click="{{toggle_}}">
                 Show inherited
               </button>
             </template>
@@ -182,8 +182,8 @@
             <h3 data-anchor-id="{{data.name}}.events">Events</h3>
             <template if="{{data.inherited.events.length}}">
               <button class="inherit-toggle"
-                      data-target="collapse-events"
-                      on-click="{{toggle}}">
+                      data-target="#collapse-events"
+                      on-click="{{toggle_}}">
                 Show inherited
               </button>
             </template>
@@ -241,8 +241,8 @@
             <h3 data-anchor-id="{{data.name}}.methods">Methods</h3>
             <template if="{{data.inherited.methods.length}}">
               <button class="inherit-toggle"
-                      data-target="collapse-methods"
-                      on-click="{{toggle}}">
+                      data-target="#collapse-methods"
+                      on-click="{{toggle_}}">
                 Show inherited
               </button>
             </template>
@@ -305,21 +305,50 @@
       return htmlStr.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    Polymer('doc-page', {
+    Polymer({
+      /**
+       * The height of the banner on the home page. Used when scrolling to
+       * deep linked anchors.
+       *
+       * @attribute bannerHeight
+       * @type number
+       * @default 0
+       */
       bannerHeight: 0,
+
+      /**
+       * Indicates if the component is in its own top level dir and can be
+       * downloaded.
+       * core-submenu is inside the core-menu directory and is therefore NOT
+       * downloadable.
+       *
+       * @attribute downloadable
+       * @type boolean
+       * @default false
+       */
       downloadable: false,
-      recordDemoPageview: function(e, detail, sender) {
+
+      /**
+       * Click handler to record a demo page view in Google analytics
+       */
+      recordDemoPageview_: function(e, detail, sender) {
         window.recordPageview && window.recordPageview(sender.href); // global pollution.
       },
-      prettyPrint: function(e, detail, sender) {
+
+      /**
+       * MarkedJS  handler to pretty print code once it has been converted
+       * from Markdown
+       */
+      prettyPrint_: function(e, detail, sender) {
         if (window.prettyPrintOne) {
           detail.code = window.prettyPrintOne(encodeHTMLEntities_(detail.code));
         }
       },
-      collectionPrefix: function(elementName) {
-        var match = elementName.match(/(\w+)-/);
-        return match ? match[1] : 'core';
-      },
+
+      /**
+       * When data for the doc page updates, wait for 200ms, then attempt to
+       * scroll to any deep link anchors
+       */
       dataChanged: function() {
         // HACK: There is some sort of phantom scrolling going on that will, under some
         // circumstances, scroll back to the top of the page if we scroll down to the
@@ -327,9 +356,15 @@
         // happen if we delay for a bit before triggering our scroll.
         // To get around this, we wrap the scrolling in an async with a 200ms delay,
         // similar to what's done in app.js's polymer-ready listener.
-        this.async(this.scrollToAnchor, null, 200);
+        this.async(this.scrollToAnchor_, null, 200);
       },
-      scrollToAnchor: function() {
+
+      /**
+       * Look in the URL for a deep link hash. Query for an element with a
+       * matching `data-anchor-id` and attempt to scroll to it, accounting for
+       * the site's `bannerHeight`
+       */
+      scrollToAnchor_: function() {
         var anchorId = window.location.hash.slice(1);
         var elementToFocus = this.$.main.querySelector('[data-anchor-id="' + anchorId + '"]');
         if (elementToFocus) {
@@ -338,20 +373,28 @@
           window.scrollTo(0, elementToFocus.offsetTop - this.bannerHeight);
         }
       },
-      // This handler is invoked on all clicks within the <doc-page>, and checks
-      // to see if the element clicked on has an id that can be used as a page
-      // anchor. If so, it sets location.hash to that id.
+
+      /**
+       * This handler is invoked on all clicks within the <doc-page>, and checks
+       * to see if the element clicked on has an id that can be used as a page
+       * anchor. If so, it sets location.hash to that id.
+       */
       handleAnchorIdClick: function(e) {
         if (e.target.dataset.anchorId) {
           window.location.hash = e.target.dataset.anchorId;
-          this.scrollToAnchor();
+          this.scrollToAnchor_();
         }
       },
-      toggle: function(e, detail, sender) {
+
+      /**
+       * Click handler for the inherited button, which will open/close
+       * the core-collapse element containing inherited fields
+       */
+      toggle_: function(e, detail, sender) {
         // Using shadowRoot instead of $ because when new pages are
         // injected, the $ does not seem to rebuild properly. It only
         // contains the topmost element (#main)
-        this.shadowRoot.getElementById(sender.dataset.target).toggle();
+        this.$.main.querySelector(sender.dataset.target).toggle();
       }
     });
 
