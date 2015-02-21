@@ -134,7 +134,7 @@ module.exports = function(grunt) {
     doc_merge: {
       default: {
         options: {
-          config: 'config.json',
+          prefix: ['core', 'paper'],
           merge: true
         },
         src: 'components',
